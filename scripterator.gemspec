@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "scripterator"
   gem.require_paths = ["lib"]
   gem.version       = Scripterator::VERSION
+
+  gem.add_development_dependency "rspec", "~> 2.13"
 end
