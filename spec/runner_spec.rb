@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Scripterator::Runner do
-  let(:runner)      { Scripterator::Runner.new(description, options, &awesome_script) }
+  let(:runner)      { Scripterator::Runner.new(description, &awesome_script) }
   let(:description) { 'Convert gizmos to eggplant parmigiana' }
   let(:options)     { {start_id: 0, end_id: 0, output_stream: StringIO.new} }
 
@@ -58,7 +58,7 @@ describe Scripterator::Runner do
     end
   end
 
-  subject { runner.run }
+  subject { runner.run(options) }
 
   shared_examples_for 'raises an error' do
     specify do

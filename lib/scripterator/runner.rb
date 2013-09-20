@@ -5,23 +5,26 @@ module Scripterator
   class Runner
     extend Forwardable
     def_delegators :script_redis,
-      :already_run_for?, :expire_redis_sets, :mark_as_failed_for, :mark_as_run_for, :script_key
+      :already_run_for?, :checked_ids, :expire_redis_sets, :failed_ids,
+      :mark_as_failed_for, :mark_as_run_for, :script_key
 
-    def initialize(description, options = {}, &config_block)
+    def initialize(description, &config_block)
+      @script_description = description
+
+      self.instance_eval(&config_block) if config_block
+    end
+
+    def run(options = {})
       unless options[:start_id] || options[:end_id]
         raise 'You must provide either a start ID or end ID'
       end
+      @start_id         = options[:start_id] || 1
+      @end_id           = options[:end_id]   || User.last.try(:id) || 0
+      @redis_expiration = options[:redis_expiration]
+      @output_stream    = options[:output_stream] || $stdout
 
-      @script_description = description
-      @start_id           = options[:start_id] || 1
-      @end_id             = options[:end_id]   || User.last.try(:id) || 0
-      @redis_expiration   = options[:redis_expiration]
-      @output_stream      = options[:output_stream] || $stdout
+      raise 'No per_record code defined' unless @per_record
 
-      init_callbacks &config_block
-    end
-
-    def run
       init_vars
       run_blocks
       output_stats
@@ -48,13 +51,6 @@ module Scripterator
       @total_checked = 0
       @already_done  = 0
       @errors        = []
-    end
-
-    def init_callbacks &config_block
-      self.instance_eval &config_block
-      unless @per_record
-        raise 'No per_record code defined'
-      end
     end
 
     def output_progress(id)
