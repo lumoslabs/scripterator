@@ -15,5 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Scripterator::VERSION
 
-  gem.add_development_dependency "rspec", "~> 2.13"
+  gem.add_dependency "redis", "~> 3.0"
+
+  gem.add_development_dependency "fakeredis", "~> 0.4"
+  gem.add_development_dependency "rspec",     "~> 2.13"
 end

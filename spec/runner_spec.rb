@@ -1,7 +1,9 @@
 require 'spec_helper'
 
-describe Scripterator do
-  let(:scripterator) { Scripterator.new(&awesome_script) }
+describe Scripterator::Runner do
+  let(:runner)      { Scripterator::Runner.new(description, options, &awesome_script) }
+  let(:description) { 'Convert gizmos to eggplant parmigiana' }
+  let(:options)     { {start_id: 0, end_id: 0, output_stream: StringIO.new} }
 
   class Gizmo
     attr_accessor :id
@@ -50,15 +52,13 @@ describe Scripterator do
 
   let(:awesome_script) do
     Proc.new do
-      description { 'Convert gizmos to eggplant parmigiana' }
-      options { {start_id: 0, end_id: 0, output_stream: StringIO.new} }
       find_gizmo_by { |id| Gizmo.find(id) }
-      before   { Widget.before_stuff }
-      per_record { |gizmo| Widget.gizmo_code(gizmo) }
+      before        { Widget.before_stuff }
+      per_record    { |gizmo| Widget.gizmo_code(gizmo) }
     end
   end
 
-  subject { scripterator.run }
+  subject { runner.run }
 
   shared_examples_for 'raises an error' do
     specify do
@@ -69,14 +69,7 @@ describe Scripterator do
   before { Gizmo.destroy_all }
 
   context 'when no start or end ID is passed' do
-    let(:awesome_script) do
-      Proc.new do
-        description { 'Convert gizmos to eggplant parmigiana' }
-        find_gizmo_by { |id| Gizmo.find(id) }
-        before   { Widget.before_stuff }
-        per_record { |gizmo| Widget.gizmo_code(gizmo) }
-      end
-    end
+    let(:options) { {} }
 
     it_behaves_like 'raises an error'
   end
@@ -101,16 +94,9 @@ describe Scripterator do
 
   context 'when there are gizmos' do
     let(:num_gizmos) { 3 }
-
-    let(:awesome_script) do
-      Proc.new do
-        description { 'Convert gizmos to eggplant parmigiana' }
-        options { {start_id: Gizmo.first.id, end_id: Gizmo.last.id , output_stream: StringIO.new} }
-        find_gizmo_by { |id| Gizmo.find(id) }
-        before   { Widget.before_stuff }
-        per_record { |gizmo| Widget.gizmo_code(gizmo) }
-      end
-    end
+    let(:options)    { {start_id: start_id, end_id: end_id, output_stream: StringIO.new} }
+    let(:start_id)   { Gizmo.first.id }
+    let(:end_id)     { Gizmo.last.id }
 
     before { num_gizmos.times { Gizmo.create! } }
 
@@ -121,15 +107,7 @@ describe Scripterator do
     end
 
     context 'when not all gizmos are checked' do
-      let(:awesome_script) do
-        Proc.new do
-          description { 'Convert gizmos to eggplant parmigiana' }
-          options { {start_id: Gizmo.last.id, end_id: Gizmo.last.id, output_stream: StringIO.new } }
-          find_gizmo_by { |id| Gizmo.find(id) }
-          before   { Widget.before_stuff }
-          per_record { |gizmo| Widget.gizmo_code(gizmo) }
-        end
-      end
+      let(:start_id) { Gizmo.last.id }
 
       it 'marks only the checked IDs as checked' do
         subject
@@ -139,22 +117,12 @@ describe Scripterator do
     end
 
     context 'when some gizmos have already been checked' do
-      let(:awesomescript) do
-        Proc.new do
-          description { 'Convert gizmos to eggplant parmigiana' }
-          options  { {start_id: Gizmo.first.id, end_id: Gizmo.last.id, output_stream: StringIO.new} }
-          find_gizmo_by { |id| Gizmo.find(id) }
-          before   { Widget.before_stuff }
-          per_record { |gizmo| Widget.gizmo_code(gizmo) }
-        end
-      end
-      
       let(:checked_ids) { [Gizmo.first.id] }
-      
+
       before do
         Scripterator.stub(:checked_ids_for).and_return( checked_ids )
-        ScriptRedis.any_instance.stub(:already_run_for?).and_return(false)
-        ScriptRedis.any_instance.stub(:already_run_for?).with(Gizmo.first.id).and_return(true)
+        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).and_return(false)
+        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Gizmo.first.id).and_return(true)
       end
 
       it 'only runs the gizmo code for unchecked gizmos' do

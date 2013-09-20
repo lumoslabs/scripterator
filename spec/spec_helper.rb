@@ -3,6 +3,7 @@
 # Require this file using `require "spec_helper"` to ensure that it is only
 # loaded once.
 
+require 'fakeredis/rspec'
 require 'scripterator'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
