@@ -90,8 +90,8 @@ describe Scripterator::Runner do
 
       it 'marks only the checked IDs as checked' do
         subject
-        Scripterator.checked_ids_for('Convert widgets to eggplant parmigiana').should_not include Widget.first.id
-        Scripterator.checked_ids_for('Convert widgets to eggplant parmigiana').should include Widget.last.id
+        Scripterator.checked_ids_for(description).should_not include Widget.first.id
+        Scripterator.checked_ids_for(description).should include Widget.last.id
       end
     end
 
@@ -120,8 +120,8 @@ describe Scripterator::Runner do
 
       it 'marks only the failed IDs as failed' do
         subject
-        Scripterator.failed_ids_for('Convert widgets to eggplant parmigiana').should_not include Widget.first.id
-        Scripterator.failed_ids_for('Convert widgets to eggplant parmigiana').should include Widget.last.id
+        Scripterator.failed_ids_for(description).should_not include Widget.first.id
+        Scripterator.failed_ids_for(description).should include Widget.last.id
       end
     end
   end
