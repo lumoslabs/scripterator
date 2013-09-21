@@ -15,6 +15,10 @@ module Scripterator
       Runner.new(description, &block).run(options)
     end
 
+    def already_run_for?(description, id)
+      Runner.new(description).already_run_for?(id)
+    end
+
     def checked_ids_for(description)
       Runner.new(description).checked_ids
     end
