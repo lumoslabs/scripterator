@@ -65,14 +65,14 @@ describe Scripterator::Runner do
     end
   end
 
-  context 'when there are no widgets' do
+  context 'when there are no records for the specified model' do
     it 'does not run the per-record block' do
       Widget.should_not_receive :transform_a_widget
       subject
     end
   end
 
-  context 'when there are widgets' do
+  context 'when there are records for the specified model' do
     let(:num_widgets) { 3 }
 
     before { num_widgets.times { Widget.create! } }
@@ -83,7 +83,7 @@ describe Scripterator::Runner do
       subject
     end
 
-    context 'when not all widgets are checked' do
+    context 'when not all records are checked' do
       let(:start_id) { Widget.last.id }
 
       it 'marks only the checked IDs as checked' do
@@ -93,7 +93,7 @@ describe Scripterator::Runner do
       end
     end
 
-    context 'when some widgets have already been checked' do
+    context 'when some records have already been checked' do
       let(:checked_ids) { [Widget.first.id] }
 
       before do
@@ -102,13 +102,13 @@ describe Scripterator::Runner do
         Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Widget.first.id).and_return(true)
       end
 
-      it 'only runs the widget code for unchecked widgets' do
+      it 'only runs the per-record code for unchecked records' do
         Widget.should_receive(:transform_a_widget).exactly(num_widgets - 1).times
         subject
       end
     end
 
-    context 'when some widgets fail' do
+    context 'when the code for some records fails' do
       before do
         Widget.stub :transform_a_widget do |widget|
           raise 'Last widget expl0de' if widget.id == Widget.last.id
