@@ -3,13 +3,12 @@ require 'spec_helper'
 describe Scripterator::Runner do
   let(:runner)      { Scripterator::Runner.new(description, &awesome_script) }
   let(:description) { 'Convert widgets to eggplant parmigiana' }
-  let(:options)     { {start_id: 0, end_id: 0, output_stream: StringIO.new} }
+  let(:options)     { {start_id: 1, output_stream: StringIO.new} }
 
   let(:awesome_script) do
     Proc.new do
-      model      { Widget }
-      before     { Widget.before_stuff }
-      per_record { |widget| Widget.widget_code(widget) }
+      before          { Widget.before_stuff }
+      for_each_widget { |widget| Widget.transform_a_widget(widget) }
     end
   end
 
@@ -21,24 +20,35 @@ describe Scripterator::Runner do
     end
   end
 
+  it 'infers the model from the for_each block' do
+    runner.send(:model_finder).should == Widget
+  end
+
+  context 'when a model block is defined' do
+    let(:awesome_script) do
+      Proc.new do
+        model           { Widget.where(name: 'bla') }
+        before          { Widget.before_stuff }
+        for_each_widget { |widget| Widget.transform_a_widget(widget) }
+      end
+    end
+    let!(:widget1) { Widget.create(name: 'foo') }
+    let!(:widget2) { Widget.create(name: 'bla') }
+
+    it 'uses the given model finder code' do
+      Widget.should_receive(:transform_a_widget).once.with(widget2)
+      Widget.should_not_receive(:transform_a_widget).with(widget1)
+      subject
+    end
+  end
+
   context 'when no start or end ID is passed' do
     let(:options) { {} }
 
     it_behaves_like 'raises an error'
   end
 
-  context 'when no model block is defined' do
-    let(:awesome_script) do
-      Proc.new do
-        before     { Widget.before_stuff }
-        per_record { |widget| Widget.widget_code(widget) }
-      end
-    end
-
-    it_behaves_like 'raises an error'
-  end
-
-  context 'when no per_record block is defined' do
+  context 'when no per-record block is defined' do
     let(:awesome_script) do
       Proc.new do
         model  { Widget }
@@ -55,8 +65,8 @@ describe Scripterator::Runner do
   end
 
   context 'when there are no widgets' do
-    it 'does not run the per_record block' do
-      Widget.should_not_receive :widget_code
+    it 'does not run the per-record block' do
+      Widget.should_not_receive :transform_a_widget
       subject
     end
   end
@@ -71,7 +81,7 @@ describe Scripterator::Runner do
 
     it 'runs the given script blocks' do
       Widget.should_receive :before_stuff
-      Widget.should_receive(:widget_code).exactly(num_widgets).times
+      Widget.should_receive(:transform_a_widget).exactly(num_widgets).times
       subject
     end
 
@@ -95,14 +105,14 @@ describe Scripterator::Runner do
       end
 
       it 'only runs the widget code for unchecked widgets' do
-        Widget.should_receive(:widget_code).exactly(num_widgets - 1).times
+        Widget.should_receive(:transform_a_widget).exactly(num_widgets - 1).times
         subject
       end
     end
 
     context 'when some widgets fail' do
       before do
-        Widget.stub :widget_code do |widget|
+        Widget.stub :transform_a_widget do |widget|
           raise 'Last widget expl0de' if widget.id == Widget.last.id
           true
         end
