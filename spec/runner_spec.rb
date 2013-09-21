@@ -2,59 +2,14 @@ require 'spec_helper'
 
 describe Scripterator::Runner do
   let(:runner)      { Scripterator::Runner.new(description, &awesome_script) }
-  let(:description) { 'Convert gizmos to eggplant parmigiana' }
+  let(:description) { 'Convert widgets to eggplant parmigiana' }
   let(:options)     { {start_id: 0, end_id: 0, output_stream: StringIO.new} }
-
-  class Gizmo
-    attr_accessor :id
-    @@current_id = -1
-    @@gizmo_store = []
-
-    def initialize
-      @id = @@current_id += 1
-    end
-
-    def self.create!
-      @@gizmo_store << Gizmo.new
-      Gizmo.last
-    end
-
-    def self.find(id)
-      @@gizmo_store[id]
-    end
-
-    def self.first
-      @@gizmo_store.first
-    end
-
-    def self.last
-      @@gizmo_store.last
-    end
-
-    def self.all
-      @@gizmo_store
-    end
-
-    def self.count
-      @@gizmo_store.count
-    end
-
-    def self.destroy_all
-      @@gizmo_store = []
-      @@current_id = -1
-    end
-  end
-
-  class Widget
-    def self.before_stuff; end
-    def self.gizmo_code(gizmo); true; end
-  end
 
   let(:awesome_script) do
     Proc.new do
-      find_gizmo_by { |id| Gizmo.find(id) }
-      before        { Widget.before_stuff }
-      per_record    { |gizmo| Widget.gizmo_code(gizmo) }
+      find_widget_by { |id| Widget.find_by_id(id) }
+      before         { Widget.before_stuff }
+      per_record     { |widget| Widget.widget_code(widget) }
     end
   end
 
@@ -65,8 +20,6 @@ describe Scripterator::Runner do
       expect { subject }.to raise_error
     end
   end
-
-  before { Gizmo.destroy_all }
 
   context 'when no start or end ID is passed' do
     let(:options) { {} }
@@ -85,64 +38,64 @@ describe Scripterator::Runner do
     end
   end
 
-  context 'when there are no gizmos' do
+  context 'when there are no widgets' do
     it 'does not run the per_record block' do
-      Widget.should_not_receive :gizmo_code
+      Widget.should_not_receive :widget_code
       subject
     end
   end
 
-  context 'when there are gizmos' do
-    let(:num_gizmos) { 3 }
-    let(:options)    { {start_id: start_id, end_id: end_id, output_stream: StringIO.new} }
-    let(:start_id)   { Gizmo.first.id }
-    let(:end_id)     { Gizmo.last.id }
+  context 'when there are widgets' do
+    let(:num_widgets) { 3 }
+    let(:options)     { {start_id: start_id, end_id: end_id, output_stream: StringIO.new} }
+    let(:start_id)    { Widget.first.id }
+    let(:end_id)      { Widget.last.id }
 
-    before { num_gizmos.times { Gizmo.create! } }
+    before { num_widgets.times { Widget.create! } }
 
     it 'runs the given script blocks' do
       Widget.should_receive :before_stuff
-      Widget.should_receive(:gizmo_code).exactly(num_gizmos).times
+      Widget.should_receive(:widget_code).exactly(num_widgets).times
       subject
     end
 
-    context 'when not all gizmos are checked' do
-      let(:start_id) { Gizmo.last.id }
+    context 'when not all widgets are checked' do
+      let(:start_id) { Widget.last.id }
 
       it 'marks only the checked IDs as checked' do
         subject
-        Scripterator.checked_ids_for('Convert gizmos to eggplant parmigiana').should_not include Gizmo.first.id
-        Scripterator.checked_ids_for('Convert gizmos to eggplant parmigiana').should include Gizmo.last.id
+        Scripterator.checked_ids_for('Convert widgets to eggplant parmigiana').should_not include Widget.first.id
+        Scripterator.checked_ids_for('Convert widgets to eggplant parmigiana').should include Widget.last.id
       end
     end
 
-    context 'when some gizmos have already been checked' do
-      let(:checked_ids) { [Gizmo.first.id] }
+    context 'when some widgets have already been checked' do
+      let(:checked_ids) { [Widget.first.id] }
 
       before do
         Scripterator.stub(:checked_ids_for).and_return( checked_ids )
         Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).and_return(false)
-        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Gizmo.first.id).and_return(true)
+        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Widget.first.id).and_return(true)
       end
 
-      it 'only runs the gizmo code for unchecked gizmos' do
-        Widget.should_receive(:gizmo_code).exactly(num_gizmos - 1).times
+      it 'only runs the widget code for unchecked widgets' do
+        Widget.should_receive(:widget_code).exactly(num_widgets - 1).times
         subject
       end
     end
 
-    context 'when some gizmos fail' do
+    context 'when some widgets fail' do
       before do
-        Widget.stub :gizmo_code do |gizmo|
-          raise 'Last gizmo expl0de' if gizmo.id == Gizmo.last.id
+        Widget.stub :widget_code do |widget|
+          raise 'Last widget expl0de' if widget.id == Widget.last.id
           true
         end
       end
 
       it 'marks only the failed IDs as failed' do
         subject
-        Scripterator.failed_ids_for('Convert gizmos to eggplant parmigiana').should_not include Gizmo.first.id
-        Scripterator.failed_ids_for('Convert gizmos to eggplant parmigiana').should include Gizmo.last.id
+        Scripterator.failed_ids_for('Convert widgets to eggplant parmigiana').should_not include Widget.first.id
+        Scripterator.failed_ids_for('Convert widgets to eggplant parmigiana').should include Widget.last.id
       end
     end
   end

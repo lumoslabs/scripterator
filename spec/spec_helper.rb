@@ -5,6 +5,7 @@
 
 require 'fakeredis/rspec'
 require 'scripterator'
+require 'support/widget'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -17,4 +18,11 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
+
+  config.around do |example|
+    ActiveRecord::Base.transaction do
+      example.run
+      raise ActiveRecord::Rollback
+    end
+  end
 end

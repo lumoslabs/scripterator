@@ -30,7 +30,7 @@ module Scripterator
       output_stats
     end
 
-    %w(before per_record after options description).each do |callback|
+    %w(before per_record after).each do |callback|
       define_method callback do |&block|
         instance_variable_set "@#{callback}", block
       end
