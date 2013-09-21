@@ -63,10 +63,16 @@ Required:
 Optional:
 
 - `model`: code with which model should be loaded, e.g., `model { User.includes(:profile, :roles) }`; if this block is not supplied, the model class is inferred from the `for_each_*` block, e.g., `for_each_post_comment` will cause the model `PostComment` to be loaded
-- `before`: code to run before iterating
+- `before`: code to run before iteration begins
 - `after`: code to run after iteration finishes
 
 Environment variable options:
+
+- `START`: first model ID to scripterate
+- `END`: last model ID to scripterate
+- `REDIS_EXPIRATION`: amount of time (in seconds) before Redis result sets (checked IDs and failed IDs) are expired
+
+Either a starting or and ending ID must be provided.
 
 ## Running tests
 
