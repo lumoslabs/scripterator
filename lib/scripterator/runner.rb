@@ -23,6 +23,7 @@ module Scripterator
       @redis_expiration = options[:redis_expiration]
       @output_stream    = options[:output_stream] || $stdout
 
+      raise 'No model finder defined' unless @model
       raise 'No per_record code defined' unless @per_record
 
       init_vars
@@ -30,17 +31,9 @@ module Scripterator
       output_stats
     end
 
-    %w(before per_record after).each do |callback|
+    %w(model before per_record after).each do |callback|
       define_method callback do |&block|
         instance_variable_set "@#{callback}", block
-      end
-    end
-
-    def method_missing(name, *args, &block)
-      if /find_(.*?)_by/ =~ name
-        @find_record_by = block
-      else
-        super
       end
     end
 
@@ -51,6 +44,14 @@ module Scripterator
       @total_checked = 0
       @already_done  = 0
       @errors        = []
+    end
+
+    def fetch_record(id)
+      model_finder.find_by_id(id)
+    end
+
+    def model_finder
+      @model_finder ||= self.instance_eval(&@model)
     end
 
     def output_progress(id)
@@ -87,7 +88,7 @@ module Scripterator
       (@start_id..@end_id).each do |id|
         output_progress(id)
 
-        run_single_row_block @find_record_by.call(id)
+        run_single_row_block fetch_record(id)
       end
       expire_redis_sets
     end

@@ -7,9 +7,9 @@ describe Scripterator::Runner do
 
   let(:awesome_script) do
     Proc.new do
-      find_widget_by { |id| Widget.find_by_id(id) }
-      before         { Widget.before_stuff }
-      per_record     { |widget| Widget.widget_code(widget) }
+      model      { Widget }
+      before     { Widget.before_stuff }
+      per_record { |widget| Widget.widget_code(widget) }
     end
   end
 
@@ -27,8 +27,24 @@ describe Scripterator::Runner do
     it_behaves_like 'raises an error'
   end
 
+  context 'when no model block is defined' do
+    let(:awesome_script) do
+      Proc.new do
+        before     { Widget.before_stuff }
+        per_record { |widget| Widget.widget_code(widget) }
+      end
+    end
+
+    it_behaves_like 'raises an error'
+  end
+
   context 'when no per_record block is defined' do
-    let(:awesome_script) { Proc.new { before { Widget.before_stuff } } }
+    let(:awesome_script) do
+      Proc.new do
+        model  { Widget }
+        before { Widget.before_stuff }
+      end
+    end
 
     it_behaves_like 'raises an error'
 
