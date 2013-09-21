@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Scripterator::Runner do
   let(:runner)      { Scripterator::Runner.new(description, &awesome_script) }
   let(:description) { 'Convert widgets to eggplant parmigiana' }
-  let(:options)     { {start_id: 1, output_stream: StringIO.new} }
+  let(:options)     { {start_id: start_id, output_stream: StringIO.new} }
+  let(:start_id)    { 1 }
 
   let(:awesome_script) do
     Proc.new do
@@ -73,9 +74,6 @@ describe Scripterator::Runner do
 
   context 'when there are widgets' do
     let(:num_widgets) { 3 }
-    let(:options)     { {start_id: start_id, end_id: end_id, output_stream: StringIO.new} }
-    let(:start_id)    { Widget.first.id }
-    let(:end_id)      { Widget.last.id }
 
     before { num_widgets.times { Widget.create! } }
 
