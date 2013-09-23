@@ -21,8 +21,6 @@ Or install it yourself as:
 
 Create a .rb file with your script code:
 ```ruby
-require 'scripterator'
-
 Scripterator.run "Convert users from legacy auth data" do
 
   before do
