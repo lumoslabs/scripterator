@@ -70,7 +70,7 @@ Environment variable options:
 - `END`: last model ID to scripterate
 - `REDIS_EXPIRATION`: amount of time (in seconds) before Redis result sets (checked IDs and failed IDs) are expired
 
-Either a starting or and ending ID must be provided.
+Either a starting or an ending ID must be provided.
 
 ## Running tests
 
