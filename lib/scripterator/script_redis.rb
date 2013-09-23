@@ -2,6 +2,10 @@ module Scripterator
   class ScriptRedis
     DEFAULT_EXPIRATION = 3 * 30 * 24 * 60 * 60 # 3 months
 
+    class << self
+      attr_accessor :redis_instance
+    end
+
     def initialize(script_description, options = {})
       @key_prefix = "one_timer_script:#{script_description.downcase.split.join('_')}"
       @redis_expiration = options[:redis_expiration] || DEFAULT_EXPIRATION
@@ -38,7 +42,17 @@ module Scripterator
     private
 
     def redis
-      @redis ||= Redis.new
+      @redis ||= self.class.redis_instance || Redis.new
+    end
+  end
+
+  class NilRedis
+    def smembers(*args)
+      []
+    end
+
+    %w(expire sadd).each do |redis_method|
+      define_method(redis_method) { |*args| nil }
     end
   end
 end

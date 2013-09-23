@@ -124,5 +124,14 @@ describe Scripterator::Runner do
         Scripterator.failed_ids_for(description).should include Widget.last.id
       end
     end
+
+    context 'when Redis client is set to nil' do
+      before { Scripterator::ScriptRedis.stub(redis_instance: Scripterator::NilRedis.new) }
+
+      it 'runs without Redis' do
+        expect { subject }.not_to raise_error
+        Scripterator.checked_ids_for(description).should be_empty
+      end
+    end
   end
 end
