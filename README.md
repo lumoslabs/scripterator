@@ -85,6 +85,9 @@ Scripterator.configure do |config|
 
   # turn off Redis
   config.redis = nil
+
+  # change default Redis set expiration time
+  config.redis_expiration = 5.days
 end
 ```
 

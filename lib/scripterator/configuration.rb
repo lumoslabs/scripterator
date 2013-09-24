@@ -1,6 +1,7 @@
 module Scripterator
   class Configuration
-    attr_reader :redis
+    attr_accessor :redis_expiration
+    attr_reader   :redis
 
     # set config.redis = nil to use NilRedis implementation
     def redis=(r)
