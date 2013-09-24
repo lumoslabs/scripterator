@@ -14,7 +14,7 @@ module Scripterator
       []
     end
 
-    %w(expire sadd).each do |redis_method|
+    %w(expire sadd sismember).each do |redis_method|
       define_method(redis_method) { |*args| nil }
     end
   end
