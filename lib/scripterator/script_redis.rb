@@ -20,7 +20,9 @@ module Scripterator
     end
 
     def expire_redis_sets
-      %w(checked failed).each { |set| redis.expire script_key(set), @redis_expiration }
+      unless @redis_expiration <= 0
+        %w(checked failed).each { |set| redis.expire script_key(set), @redis_expiration }
+      end
     end
 
     def mark_as_failed_for(id)
