@@ -58,7 +58,7 @@ User-definable blocks:
 
 Required:
 
-- `for_each_(.+)`: code to run for every record
+- `for_each_(.+)`: code to run for every record. This block should return `true` (or a truthy value) if the operation ran successfully, or `false` (or a falsy value) if the record was skipped/ineligible. Errors and Exceptions will be caught by Scripterator and tabulated/output.
 
 Optional:
 
