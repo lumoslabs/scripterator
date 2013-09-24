@@ -74,6 +74,20 @@ Environment variable options:
 
 Either a starting or an ending ID must be provided.
 
+## Configuration
+
+Within an optional Rails initializer, configure Scripterator further as follows (`config/initializers/scripterator.rb`):
+
+```ruby
+Scripterator.configure do |config|
+  # alternate Redis instance
+  config.redis = MyRedis.new
+
+  # turn off Redis
+  config.redis = nil
+end
+```
+
 ## Running tests
 
     $ bundle exec rspec
