@@ -126,7 +126,8 @@ describe Scripterator::Runner do
     end
 
     context 'when Redis client is set to nil' do
-      before { Scripterator::ScriptRedis.stub(redis_instance: Scripterator::NilRedis.new) }
+      before { Scripterator.configure { |config| config.redis = nil } }
+      after  { Scripterator.instance_variable_set(:@config, nil) }
 
       it 'runs without Redis' do
         expect { subject }.not_to raise_error

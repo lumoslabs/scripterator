@@ -1,10 +1,19 @@
 require "redis" unless defined? Redis
 
 require "scripterator/version"
+require "scripterator/configuration"
 require "scripterator/runner"
 
 module Scripterator
   class << self
+    def configure
+      yield config
+    end
+
+    def config
+      @config ||= Scripterator::Configuration.new
+    end
+
     def run(description, &block)
       options = {}.tap do |o|
         o[:start_id]         = ENV['START'].try(:to_i)
