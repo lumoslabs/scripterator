@@ -17,6 +17,8 @@ Or install it yourself as:
 
     $ gem install scripterator
 
+Works with ActiveRecord 3.* (Rails 4 support coming).
+
 ## Usage
 
 Create a .rb file with your script code:
