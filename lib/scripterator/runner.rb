@@ -65,7 +65,7 @@ module Scripterator
     end
 
     def output_progress
-      if @total_checked % 10000 == 0
+      if (@total_checked + @already_done) % 10000 == 0
         output "#{Time.now}: Checked #{@total_checked} rows, #{@success_count} migrated."
       end
     end
