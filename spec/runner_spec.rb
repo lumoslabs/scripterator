@@ -89,9 +89,9 @@ describe Scripterator::Runner do
       it 'marks only the checked IDs as checked' do
         subject
         Scripterator.already_run_for?(description, Widget.first.id).should be_false
-        Scripterator.checked_ids_for(description).should_not include Widget.first.id
+        Scripterator.checked_ids(description).should_not include Widget.first.id
         Scripterator.already_run_for?(description, Widget.last.id).should be_true
-        Scripterator.checked_ids_for(description).should include Widget.last.id
+        Scripterator.checked_ids(description).should include Widget.last.id
       end
     end
 
@@ -99,8 +99,8 @@ describe Scripterator::Runner do
       let(:checked_ids) { [Widget.first.id] }
 
       before do
-        Scripterator.stub(:checked_ids_for).and_return( checked_ids )
-        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).and_return(false)
+        Scripterator.stub(checked_ids: checked_ids)
+        Scripterator::ScriptRedis.any_instance.stub(already_run_for?: false)
         Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Widget.first.id).and_return(true)
       end
 
@@ -120,8 +120,8 @@ describe Scripterator::Runner do
 
       it 'marks only the failed IDs as failed' do
         subject
-        Scripterator.failed_ids_for(description).should_not include Widget.first.id
-        Scripterator.failed_ids_for(description).should include Widget.last.id
+        Scripterator.failed_ids(description).should_not include Widget.first.id
+        Scripterator.failed_ids(description).should include Widget.last.id
       end
     end
 
@@ -130,7 +130,7 @@ describe Scripterator::Runner do
 
       it 'runs without Redis' do
         expect { subject }.not_to raise_error
-        Scripterator.checked_ids_for(description).should be_empty
+        Scripterator.checked_ids(description).should be_empty
       end
     end
   end

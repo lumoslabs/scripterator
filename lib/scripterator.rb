@@ -15,16 +15,10 @@ module Scripterator
       Runner.new(description, &block).run(options)
     end
 
-    def already_run_for?(description, id)
-      Runner.new(description).already_run_for?(id)
-    end
-
-    def checked_ids_for(description)
-      Runner.new(description).checked_ids
-    end
-
-    def failed_ids_for(description)
-      Runner.new(description).failed_ids
+    %w(already_run_for? checked_ids failed_ids).each do |runner_method|
+      define_method(runner_method) do |description, *args|
+        Runner.new(description).send(runner_method, *args)
+      end
     end
   end
 end
