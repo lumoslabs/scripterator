@@ -74,7 +74,7 @@ module Scripterator
       output "Total rows migrated: #{@success_count} / #{@total_checked}"
       output "#{@already_done} rows previously migrated and skipped"
       output "#{@errors.count} errors"
-      if @errors.count > 0
+      if @errors.count > 0 && !failed_ids.empty?
         output "  Retrieve failed IDs with redis: SMEMBERS #{script_key(:failed)}"
       end
     end
