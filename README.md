@@ -44,6 +44,22 @@ Run your script for a given set of IDs:
 
     $ START=10000 END=19999 bundle exec rails runner my_script.rb >out.txt
 
+This will produce output of the form:
+
+```
+Starting at 2013-09-24 14:53:39 -0700...
+2013-09-24 14:53:40 -0700: Checked 0 rows, 0 migrated.
+2013-09-24 14:53:41 -0700: Checked 10000 rows, 10000 migrated.
+2013-09-24 14:53:41 -0700: Checked 20000 rows, 20000 migrated.
+2013-09-24 14:53:42 -0700: Checked 30000 rows, 30000 migrated.
+done
+Finished at 2013-09-24 14:53:43 -0700...
+
+Total rows migrated: 34903 / 34903
+0 rows previously migrated and skipped
+0 errors
+```
+
 Retrieve set information about checked and failed records:
 
 ```
