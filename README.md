@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/lumoslabs/scripterator.png)](https://travis-ci.org/lumoslabs/scripterator)
+
 # Scripterator
 "Helping you scripterate over all the things"
 
