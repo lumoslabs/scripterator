@@ -82,8 +82,8 @@ module Scripterator
     end
 
     def output_init_details
-      output " Checked IDs being stored in redis list: #{script_key(:checked)}"
-      output " Failed IDs being stored in redis list: #{script_key(:failed)}"
+      output "Checked IDs being stored in redis list: #{script_key(:checked)}"
+      output "Failed IDs being stored in redis list: #{script_key(:failed)}"
     end
 
     def output(*args)
