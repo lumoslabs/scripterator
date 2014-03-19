@@ -49,6 +49,20 @@ describe Scripterator::Runner do
     it_behaves_like 'raises an error'
   end
 
+  context 'when an id list is passed' do
+    before { num_widgets.times { Widget.create! } }
+
+    let(:num_widgets) { 3 }
+    let(:options) { { id_list: Widget.all.map(&:id) } }
+
+    it 'transforms each widget in the list' do
+      options[:id_list].each do |id|
+        runner.should_receive(:fetch_record).once.with(id)
+      end
+      subject
+    end
+  end
+
   context 'when no per-record block is defined' do
     let(:awesome_script) do
       Proc.new do

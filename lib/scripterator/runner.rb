@@ -17,9 +17,10 @@ module Scripterator
     end
 
     def run(options = {})
-      unless options[:start_id] || options[:end_id]
-        raise 'You must provide either a start ID or end ID'
+      unless (options[:start_id] || options[:end_id]) || options[:id_list]
+        raise 'You must provide either a start ID or end ID, or a comma-delimited id list'
       end
+      @id_list          = options[:id_list] || []
       @start_id         = options[:start_id] || 1
       @end_id           = options[:end_id]
       @redis_expiration = options[:redis_expiration]
@@ -27,6 +28,7 @@ module Scripterator
 
       raise 'No per_record code defined' unless @per_record
 
+      output_init_details
       init_vars
       run_blocks
       output_stats
@@ -79,6 +81,11 @@ module Scripterator
       end
     end
 
+    def output_init_details
+      output "Checked IDs being stored in redis list: #{script_key(:checked)}"
+      output "Failed IDs being stored in redis list: #{script_key(:failed)}"
+    end
+
     def output(*args)
       @output_stream.puts(*args)
     end
@@ -95,13 +102,20 @@ module Scripterator
     end
 
     def run_loop
-      if @end_id
-        (@start_id..@end_id).each { |id| transform_one_record(fetch_record(id)) }
+      if @id_list.count > 0
+        run_for_id_list
+      elsif @end_id
+        @id_list = (@start_id..@end_id)
+        run_for_id_list
       else
         model_finder.find_each(start: @start_id) { |record| transform_one_record(record) }
       end
 
       expire_redis_sets
+    end
+
+    def run_for_id_list
+      @id_list.each { |id| transform_one_record(fetch_record(id)) }
     end
 
     def transform_one_record(record)

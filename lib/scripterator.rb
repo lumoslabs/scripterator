@@ -18,6 +18,7 @@ module Scripterator
       options = {}.tap do |o|
         o[:start_id]         = ENV['START'].try(:to_i)
         o[:end_id]           = ENV['END'].try(:to_i)
+        o[:id_list]          = ENV['ID_LIST'].try(:split, ',')
         o[:redis_expiration] = ENV['REDIS_EXPIRATION'].try(:to_i) || config.redis_expiration
       end
 
