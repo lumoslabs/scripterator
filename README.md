@@ -62,6 +62,10 @@ Total rows migrated: 34903 / 34903
 0 errors
 ```
 
+Or, instead of a range, pass in the specific IDs you want to run against:
+
+    $ ID_LIST=1,2,100,999 bundle exec rails runner my_script.rb >out.txt
+
 Retrieve set information about checked and failed records:
 
 ```
@@ -88,6 +92,7 @@ Environment variable options:
 
 - `START`: first model ID to scripterate
 - `END`: last model ID to scripterate
+- `ID_LIST`: comma-delimited list of IDs to scripterate (e.g. "ID_LIST=1,99,440,23")
 - `REDIS_EXPIRATION`: amount of time (in seconds) before Redis result sets (checked IDs and failed IDs) are expired
 
 Either a starting or an ending ID must be provided.
