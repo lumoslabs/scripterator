@@ -24,6 +24,7 @@ Works with ActiveRecord 3.* (Rails 4 support coming).
 ## Usage
 
 Create a .rb file with your script code:
+
 ```ruby
 Scripterator.run "Convert users from legacy auth data" do
 
