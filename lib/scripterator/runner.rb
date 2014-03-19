@@ -28,6 +28,7 @@ module Scripterator
 
       raise 'No per_record code defined' unless @per_record
 
+      output_init_details
       init_vars
       run_blocks
       output_stats
@@ -78,6 +79,11 @@ module Scripterator
       if @errors.count > 0 && !failed_ids.empty?
         output "  Retrieve failed IDs with redis: SMEMBERS #{script_key(:failed)}"
       end
+    end
+
+    def output_init_details
+      output " Checked IDs being stored in redis list: #{script_key(:checked)}"
+      output " Failed IDs being stored in redis list: #{script_key(:failed)}"
     end
 
     def output(*args)
