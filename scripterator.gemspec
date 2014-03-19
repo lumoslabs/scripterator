@@ -2,8 +2,8 @@
 require File.expand_path('../lib/scripterator/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Ted Dumitrescu"]
-  gem.email         = ["ted@lumoslabs.com"]
+  gem.authors       = ["Ted Dumitrescu", "Carl Furrow"]
+  gem.email         = ["ted@lumoslabs.com", "carl@lumoslabs.com"]
   gem.description   = %q{Script iterator for ActiveRecord models}
   gem.summary       = %q{DSL for running operations on each of a set of models}
   gem.homepage      = "http://lumosity.com"
