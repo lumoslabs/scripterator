@@ -115,7 +115,7 @@ module Scripterator
     end
 
     def run_for_id_list
-      @id_list.each { |id| transform_one_record(fetch_record(id)) }
+      model_finder.where(id: @id_list).find_each { |record| transform_one_record(record) }
     end
 
     def transform_one_record(record)

@@ -57,7 +57,9 @@ describe Scripterator::Runner do
 
     it 'transforms each widget in the list' do
       options[:id_list].each do |id|
-        runner.should_receive(:fetch_record).once.with(id)
+        runner.should_receive(:transform_one_record) do |arg1|
+          arg1.id.should == id
+        end
       end
       subject
     end
