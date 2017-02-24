@@ -109,7 +109,7 @@ module Scripterator
         batch_size: @batch_size
       }
 
-      if @id_list.empty?
+      if @id_list.count < 1
         opts[:start] = @start_id
       else
         relation = model_finder.where(id: @id_list)
