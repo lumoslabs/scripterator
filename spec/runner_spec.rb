@@ -10,6 +10,7 @@ describe Scripterator::Runner do
     Proc.new do
       before          { Widget.before_stuff }
       for_each_widget { |widget| Widget.transform_a_widget(widget) }
+      after_batch     { |batch| Widget.after_batch_stuff(batch) }
     end
   end
 
@@ -31,6 +32,7 @@ describe Scripterator::Runner do
         model           { Widget.where(name: 'bla') }
         before          { Widget.before_stuff }
         for_each_widget { |widget| Widget.transform_a_widget(widget) }
+        after_batch     { |batch| Widget.after_batch_stuff(batch) }
       end
     end
     let!(:widget1) { Widget.create(name: 'foo') }
@@ -96,6 +98,7 @@ describe Scripterator::Runner do
     it 'runs the given script blocks' do
       Widget.should_receive :before_stuff
       Widget.should_receive(:transform_a_widget).exactly(num_widgets).times
+      Widget.should_receive :after_batch_stuff
       subject
     end
 
