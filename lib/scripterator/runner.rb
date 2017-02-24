@@ -116,9 +116,9 @@ module Scripterator
       end
 
       relation.find_in_batches(opts) do |group|
-        self.instance_eval(&@before_batch) if @before_batch
+        self.instance_exec(group, &@before_batch) if @before_batch
         group.each { |record| transform_one_record(record) }
-        self.instance_eval(&@after_batch) if @after_batch
+        self.instance_exec(group, &@after_batch) if @after_batch
       end
 
       expire_redis_sets
