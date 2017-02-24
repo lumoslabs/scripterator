@@ -23,6 +23,7 @@ module Scripterator
       @id_list          = options[:id_list] || []
       @start_id         = options[:start_id] || 1
       @end_id           = options[:end_id]
+      @batch_size       = options[:batch_size] || 1000
       @redis_expiration = options[:redis_expiration]
       @output_stream    = options[:output_stream] || $stdout
 
@@ -34,7 +35,7 @@ module Scripterator
       output_stats
     end
 
-    %w(model before per_record after).each do |callback|
+    %w(model before per_record after before_batch after_batch).each do |callback|
       define_method callback do |&block|
         instance_variable_set "@#{callback}", block
       end
@@ -102,20 +103,25 @@ module Scripterator
     end
 
     def run_loop
-      if @id_list.count > 0
-        run_for_id_list
-      elsif @end_id
-        @id_list = (@start_id..@end_id)
-        run_for_id_list
+      @id_list = (@start_id..@end_id) if @end_id
+      relation = model_finder
+      opts = {
+        batch_size: @batch_size
+      }
+
+      if @id_list.empty?
+        opts[:start] = @start_id
       else
-        model_finder.find_each(start: @start_id) { |record| transform_one_record(record) }
+        relation = model_finder.where(id: @id_list)
+      end
+
+      relation.find_in_batches(opts) do |group|
+        self.instance_exec(group, &@before_batch) if @before_batch
+        group.each { |record| transform_one_record(record) }
+        self.instance_exec(group, &@after_batch) if @after_batch
       end
 
       expire_redis_sets
-    end
-
-    def run_for_id_list
-      model_finder.where(id: @id_list).find_each { |record| transform_one_record(record) }
     end
 
     def transform_one_record(record)

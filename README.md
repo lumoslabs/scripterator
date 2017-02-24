@@ -32,8 +32,16 @@ Scripterator.run "Convert users from legacy auth data" do
     User.skip_some_callbacks_we_want_to_avoid_during_script_running
   end
 
+  before_batch do |batch|
+    # do stuff
+  end
+
   for_each_user do |user|
     user.do_legacy_conversion
+  end
+
+  after_batch do |batch|
+    # do stuff
   end
 
   after do
