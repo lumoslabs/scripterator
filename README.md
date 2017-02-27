@@ -101,6 +101,7 @@ Environment variable options:
 
 - `START`: first model ID to scripterate
 - `END`: last model ID to scripterate
+- `BATCH_SIZE`: how many records to process in a batch
 - `ID_LIST`: comma-delimited list of IDs to scripterate (e.g. "ID_LIST=1,99,440,23")
 - `REDIS_EXPIRATION`: amount of time (in seconds) before Redis result sets (checked IDs and failed IDs) are expired
 

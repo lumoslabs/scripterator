@@ -1,3 +1,6 @@
+# 1.3.1
+- Fix things from 1.3.0 that didn't work
+
 # 1.3.0
 - Add support for changing batch size
 - Add support for `after_batch` and `before_batch` callbacks
