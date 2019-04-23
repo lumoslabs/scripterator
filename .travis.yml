@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - ruby-2.1.6
+  - 2.5.0
 script: bundle exec rspec
 
 env:
