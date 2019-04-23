@@ -1,3 +1,6 @@
+# 1.3.2
+- Rails 5 support
+
 # 1.3.1
 - Fix things from 1.3.0 that didn't work
 
