@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = Scripterator::VERSION
 
   gem.add_dependency 'activerecord', '< 6'
-  gem.add_dependency 'redis',        '~> 3.0'
+  gem.add_dependency 'redis',        '~> 4.0'
 
   gem.add_development_dependency 'fakeredis', '~> 0.4'
   gem.add_development_dependency 'rspec',     '~> 2.13'
