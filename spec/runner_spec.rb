@@ -39,8 +39,8 @@ describe Scripterator::Runner do
     let!(:widget2) { Widget.create(name: 'bla') }
 
     it 'uses the given model finder code' do
-      Widget.should_receive(:transform_a_widget).once.with(widget2)
-      Widget.should_not_receive(:transform_a_widget).with(widget1)
+      expect(Widget).to receive(:transform_a_widget).once.with(widget2)
+      expect(Widget).not_to receive(:transform_a_widget).with(widget1)
       subject
     end
   end
@@ -59,7 +59,7 @@ describe Scripterator::Runner do
 
     it 'transforms each widget in the list' do
       options[:id_list].each do |id|
-        runner.should_receive(:transform_one_record) do |arg1|
+        expect(runner).to receive(:transform_one_record) do |arg1|
           expect(arg1.id).to eq id
         end
       end
@@ -78,14 +78,14 @@ describe Scripterator::Runner do
     it_behaves_like 'raises an error'
 
     it 'does not run any other given blocks' do
-      Widget.should_not_receive :before_stuff
+      expect(Widget).to_not receive(:before_stuff)
       subject rescue nil
     end
   end
 
   context 'when there are no records for the specified model' do
     it 'does not run the per-record block' do
-      Widget.should_not_receive :transform_a_widget
+      expect(Widget).to_not receive(:transform_a_widget)
       subject
     end
   end
@@ -96,9 +96,9 @@ describe Scripterator::Runner do
     before { num_widgets.times { Widget.create! } }
 
     it 'runs the given script blocks' do
-      Widget.should_receive :before_stuff
-      Widget.should_receive(:transform_a_widget).exactly(num_widgets).times
-      Widget.should_receive :after_batch_stuff
+      expect(Widget).to receive(:before_stuff)
+      expect(Widget).to receive(:transform_a_widget).exactly(num_widgets).times
+      expect(Widget).to receive(:after_batch_stuff)
       subject
     end
 
@@ -107,10 +107,10 @@ describe Scripterator::Runner do
 
       it 'marks only the checked IDs as checked' do
         subject
-        Scripterator.already_run_for?(description, Widget.first.id).should be_falsey
-        Scripterator.checked_ids(description).should_not include Widget.first.id
-        Scripterator.already_run_for?(description, Widget.last.id).should be_truthy
-        Scripterator.checked_ids(description).should include Widget.last.id
+        expect(Scripterator.already_run_for?(description, Widget.first.id)).to be_falsey
+        expect(Scripterator.checked_ids(description)).to_not include Widget.first.id
+        expect(Scripterator.already_run_for?(description, Widget.last.id)).to be_truthy
+        expect(Scripterator.checked_ids(description)).to include Widget.last.id
       end
     end
 
@@ -124,7 +124,7 @@ describe Scripterator::Runner do
       end
 
       it 'only runs the per-record code for unchecked records' do
-        Widget.should_receive(:transform_a_widget).exactly(num_widgets - 1).times
+        expect(Widget).to receive(:transform_a_widget).exactly(num_widgets - 1).times
         subject
       end
     end
@@ -139,8 +139,8 @@ describe Scripterator::Runner do
 
       it 'marks only the failed IDs as failed' do
         subject
-        Scripterator.failed_ids(description).should_not include Widget.first.id
-        Scripterator.failed_ids(description).should include Widget.last.id
+        expect(Scripterator.failed_ids(description)).to_not include Widget.first.id
+        expect(Scripterator.failed_ids(description)).to include Widget.last.id
       end
     end
 
@@ -149,8 +149,8 @@ describe Scripterator::Runner do
       after  { Scripterator.instance_variable_set(:@config, nil) }
 
       it 'runs without Redis' do
-        expect { subject }.not_to raise_error(StandardError)
-        Scripterator.checked_ids(description).should be_empty
+        expect { subject }.not_to raise_error
+        expect(Scripterator.checked_ids(description)).to be_empty
       end
     end
   end
