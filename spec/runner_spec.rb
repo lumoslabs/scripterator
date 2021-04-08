@@ -18,12 +18,12 @@ describe Scripterator::Runner do
 
   shared_examples_for 'raises an error' do
     specify do
-      expect { subject }.to raise_error
+      expect { subject }.to raise_error(StandardError)
     end
   end
 
   it 'infers the model from the for_each block' do
-    runner.send(:model_finder).should == Widget
+    expect(runner.send(:model_finder)).to eq Widget
   end
 
   context 'when a model block is defined' do
@@ -60,7 +60,7 @@ describe Scripterator::Runner do
     it 'transforms each widget in the list' do
       options[:id_list].each do |id|
         runner.should_receive(:transform_one_record) do |arg1|
-          arg1.id.should == id
+          expect(arg1.id).to eq id
         end
       end
       subject
@@ -149,7 +149,7 @@ describe Scripterator::Runner do
       after  { Scripterator.instance_variable_set(:@config, nil) }
 
       it 'runs without Redis' do
-        expect { subject }.not_to raise_error
+        expect { subject }.not_to raise_error(StandardError)
         Scripterator.checked_ids(description).should be_empty
       end
     end
