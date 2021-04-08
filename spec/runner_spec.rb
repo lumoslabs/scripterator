@@ -118,9 +118,9 @@ describe Scripterator::Runner do
       let(:checked_ids) { [Widget.first.id] }
 
       before do
-        Scripterator.stub(checked_ids: checked_ids)
-        Scripterator::ScriptRedis.any_instance.stub(already_run_for?: false)
-        Scripterator::ScriptRedis.any_instance.stub(:already_run_for?).with(Widget.first.id).and_return(true)
+        allow(Scripterator).to receive(:checked_ids).and_return(checked_ids)
+        allow_any_instance_of(Scripterator::ScriptRedis).to receive(:already_run_for?).and_return(false)
+        allow_any_instance_of(Scripterator::ScriptRedis).to receive(:already_run_for?).with(Widget.first.id).and_return(true)
       end
 
       it 'only runs the per-record code for unchecked records' do
@@ -131,7 +131,7 @@ describe Scripterator::Runner do
 
     context 'when the code for some records fails' do
       before do
-        Widget.stub :transform_a_widget do |widget|
+        allow(Widget).to receive(:transform_a_widget) do |widget|
           raise 'Last widget expl0de' if widget.id == Widget.last.id
           true
         end
