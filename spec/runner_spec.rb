@@ -107,9 +107,9 @@ describe Scripterator::Runner do
 
       it 'marks only the checked IDs as checked' do
         subject
-        Scripterator.already_run_for?(description, Widget.first.id).should be_false
+        Scripterator.already_run_for?(description, Widget.first.id).should be_falsey
         Scripterator.checked_ids(description).should_not include Widget.first.id
-        Scripterator.already_run_for?(description, Widget.last.id).should be_true
+        Scripterator.already_run_for?(description, Widget.last.id).should be_truthy
         Scripterator.checked_ids(description).should include Widget.last.id
       end
     end
