@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'activerecord', '< 6'
   gem.add_dependency 'redis',        '~> 4.0'
 
-  gem.add_development_dependency 'fakeredis', '~> 0.4'
+  gem.add_development_dependency 'fakeredis', '~> 0.8.0'
   gem.add_development_dependency 'rspec',     '~> 2.99'
   gem.add_development_dependency 'sqlite3',   '~> 1.4'
 end
