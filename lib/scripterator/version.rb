@@ -1,3 +1,3 @@
 module Scripterator
-  VERSION = '1.4.0.beta1'
+  VERSION = '1.4.0'.freeze
 end
