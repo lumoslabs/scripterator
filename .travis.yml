@@ -3,8 +3,6 @@ rvm:
   - 2.5.8
 script: bundle exec rspec
 gemfile:
-  - Gemfile-rails-4.2.x
   - Gemfile-rails-5.0.x
   - Gemfile-rails-5.1.x
   - Gemfile-rails-5.2.x
-
