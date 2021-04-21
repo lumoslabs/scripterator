@@ -1,9 +1,8 @@
 language: ruby
 rvm:
-  - 2.5.0
+  - 2.5.8
 script: bundle exec rspec
-
-env:
-  - 'RAILS_VERSION=4.2'
-  - 'RAILS_VERSION=5.0'
-  - 'RAILS_VERSION=5.1'
+gemfile:
+  - Gemfile-rails-5.0.x
+  - Gemfile-rails-5.1.x
+  - Gemfile-rails-5.2.x

@@ -1,3 +1,8 @@
+# 1.4.0
+- Update redis to 4+
+- Update rspec
+- Update fakeredis
+
 # 1.3.2
 - Rails 5 support
 

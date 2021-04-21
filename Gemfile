@@ -1,6 +1,2 @@
-source 'https://rubygems.org'
-
-# Specify your gem's dependencies in scripterator.gemspec
-gemspec
-
-gem 'activerecord', ENV['RAILS_VERSION'] || '~> 3.2'
+ENV['BUNDLE_GEMFILE'] = File.expand_path('../Gemfile-rails-5.2.x', __FILE__)
+Bundler.load
